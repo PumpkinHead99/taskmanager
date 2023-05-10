@@ -1,0 +1,31 @@
+{
+  "name": "taskmanager",
+  "version": "1.0.0",
+  "description": "task manager poc",
+  "main": "app.ts",
+  "scripts": {
+    "build": "npm install",
+    "start": "nodemon -w src --ext ts --exec ts-node src/app.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PumpkinHead99/taskmanager.git"
+  },
+  "author": "Adam Batala",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PumpkinHead99/taskmanager/issues"
+  },
+  "homepage": "https://github.com/PumpkinHead99/taskmanager#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "inversify": "^6.0.1",
+    "inversify-express-utils": "^6.4.3",
+    "nodemon": "^2.0.22",
+    "pg": "^8.10.0",
+    "ts-node": "^10.9.1",
+    "typeorm": "^0.3.16",
+    "typescript": "^5.0.4"
+  },
+  "devDependencies": {}
+}

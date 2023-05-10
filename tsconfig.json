@@ -1,0 +1,26 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"esModuleInterop": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"strictPropertyInitialization": false,
+		"target": "es6",
+		"strict": true,
+		"moduleResolution": "node",
+		"sourceMap": true,
+		"outDir": "dist",
+		"resolveJsonModule": true,
+		"allowJs": true,
+		"suppressImplicitAnyIndexErrors": true,
+		"strictNullChecks": false,
+		"noImplicitAny": false,
+	},
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+		"node_modules"
+	],
+	"semicolon": [true, "always"]
+}
