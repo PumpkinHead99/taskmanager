@@ -8,7 +8,7 @@ import { injectable, inject } from "inversify";
 import { Repository } from "typeorm";
 import { Task } from "../model/entities/task";
 import { ITag } from "../model/interfaces/ITag";
-import { ITask } from "../model/interfaces/ITask";
+import { ITask, TaskFilter } from "../model/interfaces/ITask";
 import { NotFoundError, ServerError } from "../server/errors";
 import RepositoryProvider from "../server/repository-provider";
 import TagService from "./tag-service";
@@ -28,9 +28,38 @@ export default class TaskService {
      * Gets all tasks
      * @returns {Task[]}
      */
-	public async getAll(): Promise<Task[]> {
-		return this._repository.find();
+	public async getAll(filter?: TaskFilter): Promise<Task[]> {
+        if (filter) {
+            let query = this._repository
+                .createQueryBuilder('task')
+                .leftJoinAndSelect('task.Tags', 'tag');
+
+            Object.entries(filter).map(([key, val], index) => {
+                let filter = "";
+                let parameter;
+                if (key === "Tag") {
+                    Object.entries(filter[key]).map()
+                    filter = `task.${key} = :param`;
+                    parameter = val;
+                } else {
+                    filter = `tag.${key} = :param`;
+                }
+
+                filter.length > 0 ? index === 0 ? query.where(filter, { param: val }) : query.orWhere(filter, { param: val }) : null;
+            });
+            
+            return await query.getMany();
+        } else {
+            return await this._repository.find();
+        }
 	}
+
+    private getFilterString(key: string, value: string): string {
+        switch (key) {
+            case "Description":
+                return `task.${key}`
+        }
+    }
 
     /**
      * Creates new task

@@ -5,7 +5,8 @@
   "main": "app.ts",
   "scripts": {
     "build": "npm install",
-    "start": "nodemon -w src --ext ts --exec ts-node src/app.ts"
+    "start": "nodemon -w src --ext ts --exec ts-node src/app.ts",
+    "doc": "npx typedoc --out docs src/**/*.ts"
   },
   "repository": {
     "type": "git",
@@ -27,5 +28,8 @@
     "typeorm": "^0.3.16",
     "typescript": "^5.0.4"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/node": "^20.1.2",
+    "typedoc": "^0.24.7"
+  }
 }

@@ -1,3 +1,6 @@
+## Assignment
+[Assignment](./assignment.txt)
+
 ## Install dependencies
 ```
 npm install
@@ -14,3 +17,14 @@ npm run start
 
 ## Run application for debugging
 Run program with debug mode from Debug TS
+
+## Documentation
+1. Generate documentation
+```
+npm run doc
+```
+2. Documentation will be saved here
+[Documentation](docs/index.html)
+3. Run as live server
+
+## Total time 5H

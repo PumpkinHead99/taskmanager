@@ -4,7 +4,7 @@ import { inject } from "inversify";
 import { results } from "inversify-express-utils";
 import CONST from "../../config/constants";
 import TaskService from "../../services/task-service";
-import { ITask } from "../../model/interfaces/ITask";
+import { ITask, TaskFilter } from "../../model/interfaces/ITask";
 import { ITag } from "../../model/interfaces/ITag";
 
 @controller("/Task")
@@ -16,9 +16,9 @@ export default class TaskController extends BaseHttpController {
 	}
 
     @httpGet("/")
-	public async getAll(): Promise<results.JsonResult> {
+	public async getAll(@requestBody() data?: TaskFilter): Promise<results.JsonResult> {
 		return this.json(
-			await this._service.getAll()
+			await this._service.getAll(data)
 		);
 	}
 

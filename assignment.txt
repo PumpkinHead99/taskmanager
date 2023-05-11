@@ -1,0 +1,22 @@
+Navrhněte a naprogramujte REST API, ve kterém se budou držet úkoly. Každý úkol je součástí jednoho projektu a může mít 0 - 100 tagů. 
+Vedle klasických CRUD operací je potřeba myslet na stránkování a filtrování, dle jakéhokoliv parametru (tag, popis, projekt).
+K API vytvořte dokumentaci ve svém oblíbeném nástroji.
+
+Struktura pro projekt:
+- Název
+- Popis
+- Datumy
+
+Struktura pro úkol:
+- Popis
+- Stav úkolu (nový, v procesu, hotovo)
+
+Struktura pro tag:
+- Název
+
+Poznámka k zadání:
+
+Mějte prosím na paměti, že jde především o prověření zkušeností a postupů. Není to o tom za každou cenu odevzdat hotovou úlohu.
+Výstupem úlohy by měl být odkaz na gitlab/cokoliv co používáte, čas řešení, popřípadě poznámky k důvodu daného postupu.
+K uložení dat použijte databázi, ideálně PostgreSQL.
+Jako fw Nest/Express.
