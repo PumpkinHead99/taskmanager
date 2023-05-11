@@ -27,4 +27,4 @@ npm run doc
 [Documentation](docs/index.html)
 3. Run as live server
 
-## Total time 5H
+## Total time 6H

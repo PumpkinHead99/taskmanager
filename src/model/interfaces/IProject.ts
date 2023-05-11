@@ -7,3 +7,11 @@ export interface IProject {
     Date: Date;
     Tasks?: Task[];
 }
+
+export interface ProjectFilter {
+    ID?: number;
+    Name?: string;
+    Description?: string;
+    Date?: Date;
+    Task?: Task;
+}

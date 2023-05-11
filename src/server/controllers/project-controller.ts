@@ -29,6 +29,13 @@ export default class ProjectController extends BaseHttpController {
 		);
 	}
 
+    @httpGet("/:id/getTasks")
+	public async getTasks(@requestParam("id") id: number): Promise<results.JsonResult> {
+		return this.json(
+			await this._service.getTasks(id)
+		);
+	}
+
     @httpPut("/")
 	public async update(@requestBody() data: IProject): Promise<results.JsonResult> {
 		return this.json(

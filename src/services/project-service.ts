@@ -7,11 +7,12 @@
 import { injectable, inject } from "inversify";
 import { Repository } from "typeorm";
 import { Project } from "../model/entities/project";
-import { IProject } from "../model/interfaces/IProject";
+import { IProject, ProjectFilter } from "../model/interfaces/IProject";
 import { ITask } from "../model/interfaces/ITask";
 import { NotFoundError } from "../server/errors";
 import RepositoryProvider from "../server/repository-provider";
 import TaskService from "./task-service";
+import UtilsService from "./utils-service";
 
 @injectable()
 export default class ProjectService {
@@ -19,17 +20,26 @@ export default class ProjectService {
 
 	constructor(
         @inject(RepositoryProvider) private _provider: RepositoryProvider,
-        @inject(TaskService) private _taskService: TaskService
+        @inject(TaskService) private _taskService: TaskService,
+        @inject(UtilsService) private _utils: UtilsService
     ) {
         this._repository = _provider.get(Project);
     }
 
     /**
-     * Gets all projects
+     * Gets all projects or filtered ones if filter is filled
+     * @param filter
      * @returns {Project[]}
      */
-	public async getAll(): Promise<Project[]> {
-		return this._repository.find();
+	public async getAll(filter?: ProjectFilter): Promise<Project[]> {
+		if (filter) {
+            let query = this._repository.createQueryBuilder('project');
+            if (filter.Task) query.leftJoinAndSelect('project.Tasks', 'Task');
+            
+            return await this._utils.getFilterQuery(query, filter).getMany();
+        } else {
+            return await this._repository.find();
+        }
 	}
 
     /**
@@ -56,7 +66,7 @@ export default class ProjectService {
     * @param ID project ID
     */
     public async delete(ID: number): Promise<void> {
-        const project = await this._byId(ID);
+        const project = await this._byIdWithRelations(ID);
         
         if (project.Tasks.length > 0) {
             for (let i = 0; i < project.Tasks.length; i++) {
@@ -100,11 +110,40 @@ export default class ProjectService {
     }
 
     /**
+     * Gets tasks for specific project
+     * @param ID project ID
+     * @returns {ITask[]}
+     */
+    public async getTasks(ID: number): Promise<ITask[]> {
+        const project = await this._byIdWithRelations(ID);
+        return project.Tasks;
+    }
+
+    /**
      * Gets project by ID
      * @param ID project ID
-     * @returns 
+     * @returns {Project}
      */
     private async _byId(ID: number): Promise<Project> {
+        const project = await this._repository.findOne({
+            where: {
+                ID: ID
+            }
+        });
+
+        if (!project) {
+            throw new NotFoundError(`Project with ID ${ID} doesn't exist`);
+        }
+
+        return project;
+    }
+
+    /**
+     * Gets project by ID
+     * @param ID project ID
+     * @returns {Project}
+     */
+    private async _byIdWithRelations(ID: number): Promise<Project> {
         const project = await this._repository.findOne({
             where: {
                 ID: ID

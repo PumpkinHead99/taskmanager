@@ -29,6 +29,13 @@ export default class TaskController extends BaseHttpController {
 		);
 	}
 
+    @httpGet("/:id/getTags")
+	public async getTags(@requestParam("id") id: number): Promise<results.JsonResult> {
+		return this.json(
+			await this._service.getTags(id)
+		);
+	}
+
     @httpPut("/")
 	public async update(@requestBody() data: ITask): Promise<results.JsonResult> {
 		return this.json(

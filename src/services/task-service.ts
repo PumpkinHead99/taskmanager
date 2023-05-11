@@ -12,6 +12,7 @@ import { ITask, TaskFilter } from "../model/interfaces/ITask";
 import { NotFoundError, ServerError } from "../server/errors";
 import RepositoryProvider from "../server/repository-provider";
 import TagService from "./tag-service";
+import UtilsService from "./utils-service";
 
 @injectable()
 export default class TaskService {
@@ -20,46 +21,28 @@ export default class TaskService {
 	constructor(
         @inject(RepositoryProvider) private _provider: RepositoryProvider,
         @inject(TagService) private _tagService: TagService,
+        @inject(UtilsService) private _utils: UtilsService
     ) {
         this._repository = _provider.get(Task);
     }
 
     /**
-     * Gets all tasks
+     * Gets all tasks or filtered ones if filter is filled
+     * @param filter
      * @returns {Task[]}
      */
 	public async getAll(filter?: TaskFilter): Promise<Task[]> {
         if (filter) {
-            let query = this._repository
-                .createQueryBuilder('task')
-                .leftJoinAndSelect('task.Tags', 'tag');
-
-            Object.entries(filter).map(([key, val], index) => {
-                let filter = "";
-                let parameter;
-                if (key === "Tag") {
-                    Object.entries(filter[key]).map()
-                    filter = `task.${key} = :param`;
-                    parameter = val;
-                } else {
-                    filter = `tag.${key} = :param`;
-                }
-
-                filter.length > 0 ? index === 0 ? query.where(filter, { param: val }) : query.orWhere(filter, { param: val }) : null;
-            });
+            let query = this._repository.createQueryBuilder('task');
             
-            return await query.getMany();
+            if (filter.Tag) query.leftJoinAndSelect('task.Tags', 'tag');
+            if (filter.Project) query.leftJoinAndSelect('task.Project', 'project');
+
+            return await this._utils.getFilterQuery(query, filter).getMany();
         } else {
             return await this._repository.find();
         }
 	}
-
-    private getFilterString(key: string, value: string): string {
-        switch (key) {
-            case "Description":
-                return `task.${key}`
-        }
-    }
 
     /**
      * Creates new task
@@ -117,11 +100,21 @@ export default class TaskService {
     }
 
     /**
+     * Gets tags for specific task
+     * @param ID task ID
+     * @returns {ITag[]}
+     */
+    public async getTags(ID: number): Promise<ITag[]> {
+        const task = await this._byIdWithRelations(ID);
+        return task.Tags;
+    }
+
+    /**
      * Deletes task by ID
      * @param ID task ID
      */
     public async delete(ID: number): Promise<void> {
-        const task = await this._byId(ID);
+        const task = await this._byIdWithRelations(ID);
 
         if (task.Tags.length > 0) {
             this._tagService.deleteTags(task.Tags);
@@ -136,6 +129,25 @@ export default class TaskService {
      * @returns {Task}
      */
     private async _byId(ID: number): Promise<Task> {
+        const task = await this._repository.findOne({
+            where: {
+                ID: ID
+            }
+        });
+
+        if (!task) {
+            throw new NotFoundError(`Task with ID ${ID} doesn't exist`);
+        }
+
+        return task;
+    }
+
+    /**
+     * Gets task by ID with relations
+     * @param {number} ID task ID
+     * @returns {Task}
+     */
+    private async _byIdWithRelations(ID: number): Promise<Task> {
         const task = await this._repository.findOne({
             where: {
                 ID: ID
