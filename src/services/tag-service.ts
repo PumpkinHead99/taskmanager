@@ -7,26 +7,37 @@
 import { injectable, inject } from "inversify";
 import { Repository } from "typeorm";
 import { Tag } from "../model/entities/tag";
-import { ITag } from "../model/interfaces/ITag";
+import { ITag, TagFilter } from "../model/interfaces/ITag";
 import { NotFoundError } from "../server/errors";
 import RepositoryProvider from "../server/repository-provider";
+import UtilsService from "./utils-service";
 
 @injectable()
 export default class TagService {
     private _repository: Repository<Tag>;
 
 	constructor(
-        @inject(RepositoryProvider) private _provider: RepositoryProvider
+        @inject(RepositoryProvider) private _provider: RepositoryProvider,
+        @inject(UtilsService) private _utils: UtilsService
     ) {
         this._repository = _provider.get(Tag);
     }
 
     /**
-     * Gets all tags
+     * Gets all tags or filtered ones if filter is filled
+     * @param filter
      * @returns {ITag[]}
      */
-	public async getAll(): Promise<ITag[]> {
-		return this._repository.find();
+	public async getAll(filter?: TagFilter): Promise<ITag[]> {
+		if (filter) {
+            let query = this._repository.createQueryBuilder('tag');
+            
+            if (filter.Task) query.leftJoinAndSelect('tag.Task', 'task');
+
+            return await this._utils.getFilterQuery(query, filter).getMany();
+        } else {
+            return await this._repository.find();
+        }
 	}
 
     /**

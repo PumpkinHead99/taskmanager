@@ -4,7 +4,7 @@ import { inject } from "inversify";
 import { results } from "inversify-express-utils";
 import CONST from "../../config/constants";
 import TagService from "../../services/tag-service";
-import { ITag } from "../../model/interfaces/ITag";
+import { ITag, TagFilter } from "../../model/interfaces/ITag";
 
 @controller("/Tag")
 export default class TagController extends BaseHttpController {
@@ -15,9 +15,9 @@ export default class TagController extends BaseHttpController {
 	}
 
     @httpGet("/")
-	public async getAll(): Promise<results.JsonResult> {
+	public async getAll(@requestBody() data?: TagFilter): Promise<results.JsonResult> {
 		return this.json(
-			await this._service.getAll()
+			await this._service.getAll(data)
 		);
 	}
 

@@ -33,10 +33,10 @@ export default class TaskService {
      */
 	public async getAll(filter?: TaskFilter): Promise<Task[]> {
         if (filter) {
-            let query = this._repository.createQueryBuilder('task');
+            let query = this._repository.createQueryBuilder('entity');
             
-            if (filter.Tag) query.leftJoinAndSelect('task.Tags', 'tag');
-            if (filter.Project) query.leftJoinAndSelect('task.Project', 'project');
+            if (filter.Tag) query.leftJoinAndSelect('entity.Tags', 'tag');
+            if (filter.Project) query.leftJoinAndSelect('entity.Project', 'project');
 
             return await this._utils.getFilterQuery(query, filter).getMany();
         } else {

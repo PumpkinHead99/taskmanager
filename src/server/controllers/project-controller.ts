@@ -3,7 +3,7 @@ import { controller } from "inversify-express-utils";
 import { inject } from "inversify";
 import { results } from "inversify-express-utils";
 import ProjectService from "../../services/project-service"
-import { IProject } from "../../model/interfaces/IProject";
+import { IProject, ProjectFilter } from "../../model/interfaces/IProject";
 import CONST from "../../config/constants";
 import { ITask } from "../../model/interfaces/ITask";
 
@@ -16,9 +16,9 @@ export default class ProjectController extends BaseHttpController {
 	}
 
     @httpGet("/")
-	public async getAll(): Promise<results.JsonResult> {
+	public async getAll(@requestBody() data?: ProjectFilter): Promise<results.JsonResult> {
 		return this.json(
-			await this._service.getAll()
+			await this._service.getAll(data)
 		);
 	}
 
